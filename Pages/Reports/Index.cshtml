@@ -1,0 +1,158 @@
+@page
+@model PlacementDashboard.Pages.Reports.IndexModel
+@{
+    ViewData["Title"] = "Reports";
+}
+
+<section class="welcome">
+    <div class="welcome-header">
+        <div>
+            <p class="eyebrow">ANALYTICS & METRICS</p>
+            <h1>Placement Reports & Insights</h1>
+            <p class="subtitle">Comprehensive analysis of departmental conversion rates, compensation packages, and recruiting leaders.</p>
+        </div>
+        <div>
+            <button class="btn btn-secondary" onclick="window.print()">⎙ Print / Export Report</button>
+        </div>
+    </div>
+</section>
+
+<section class="stats">
+    <article class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon purple">♙</div>
+            <span class="stat-badge">Cohort</span>
+        </div>
+        <p class="stat-label">Placement Rate</p>
+        <h2>@Model.PlacementPercentage%</h2>
+        <small class="stat-foot">@Model.PlacedCount of @Model.TotalStudents placed</small>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon green">★</div>
+            <span class="stat-badge green">Highest CTC</span>
+        </div>
+        <p class="stat-label">Maximum Package</p>
+        <h2>@Model.HighestPackage.ToString("0.0") LPA</h2>
+        <small class="stat-foot">Top tier offer</small>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon blue">◆</div>
+            <span class="stat-badge blue">Average CTC</span>
+        </div>
+        <p class="stat-label">Mean Compensation</p>
+        <h2>@Model.AveragePackage.ToString("0.0") LPA</h2>
+        <small class="stat-foot">Across all accepted offers</small>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon orange">⏳</div>
+            <span class="stat-badge orange">Pending</span>
+        </div>
+        <p class="stat-label">In Pipeline</p>
+        <h2>@Model.PendingCount</h2>
+        <small class="stat-foot">Active candidates interviewing</small>
+    </article>
+</section>
+
+<div class="reports-grid">
+    <!-- Department Breakdown -->
+    <section class="panel">
+        <div class="panel-heading">
+            <div>
+                <h2>Department-Wise Performance</h2>
+                <p>Placement conversion rate and average student CGPA by branch</p>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Department</th>
+                        <th>Students</th>
+                        <th>Placed</th>
+                        <th>Placement %</th>
+                        <th>Avg CGPA</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var d in Model.DeptStats)
+                    {
+                        <tr>
+                            <td><strong class="dept-name">@d.Department</strong></td>
+                            <td>@d.Total</td>
+                            <td><span class="placed-count">@d.Placed</span></td>
+                            <td>
+                                <div class="rate-bar-cell">
+                                    <div class="mini-bar">
+                                        <div class="mini-bar-fill" style="width: @(d.Rate)%"></div>
+                                    </div>
+                                    <span class="rate-text">@d.Rate%</span>
+                                </div>
+                            </td>
+                            <td><span class="cgpa-badge">@d.AvgCgpa.ToString("0.00")</span></td>
+                        </tr>
+                    }
+
+                    @if (Model.DeptStats.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="5" class="empty-state">No department statistics available yet.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Top Recruiter Leaderboard -->
+    <section class="panel">
+        <div class="panel-heading">
+            <div>
+                <h2>Top Hiring Recruiters</h2>
+                <p>Organizations extending the highest number of offers</p>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Company</th>
+                        <th>Location</th>
+                        <th>Package</th>
+                        <th>Offers</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model.TopRecruiters)
+                    {
+                        <tr>
+                            <td>
+                                <div class="student-name-row">
+                                    <span class="student-avatar-mini brand-chip">@(r.CompanyName.Length > 0 ? r.CompanyName[..1] : "C")</span>
+                                    <strong class="student-name">@r.CompanyName</strong>
+                                </div>
+                            </td>
+                            <td><span class="text-muted">📍 @r.Location</span></td>
+                            <td><strong class="package-val">@r.PackageLPA.ToString("0.0") LPA</strong></td>
+                            <td><span class="status status-placed">@r.OffersCount Offer@(r.OffersCount > 1 ? "s" : "")</span></td>
+                        </tr>
+                    }
+
+                    @if (Model.TopRecruiters.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="4" class="empty-state">No recorded recruiter offers yet.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>

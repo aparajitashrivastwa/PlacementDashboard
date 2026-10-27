@@ -1,0 +1,150 @@
+@page
+@model PlacementDashboard.Pages.Companies.IndexModel
+@{
+    ViewData["Title"] = "Companies";
+}
+
+<section class="welcome">
+    <div class="welcome-header">
+        <div>
+            <p class="eyebrow">RECRUITERS</p>
+            <h1>Recruitment Partners</h1>
+            <p class="subtitle">Manage visiting corporate recruiters, offered profiles, and compensation packages.</p>
+        </div>
+        <div>
+            <button class="btn btn-primary" onclick="toggleModal('companyModal')">+ Register Recruiter</button>
+        </div>
+    </div>
+</section>
+
+@if (!string.IsNullOrEmpty(Model.SuccessMessage))
+{
+    <div class="alert alert-success">
+        <span>✓ @Model.SuccessMessage</span>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">
+        <span>⚠ @Model.ErrorMessage</span>
+    </div>
+}
+
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <h2>Registered Companies (@Model.Companies.Count)</h2>
+            <p>Organizations offering on-campus placement opportunities</p>
+        </div>
+
+        <div class="table-actions">
+            <input type="search" id="companySearch" class="search-input" placeholder="Search recruiter, role, location..." />
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table id="companyTable">
+            <thead>
+                <tr>
+                    <th>Company Name</th>
+                    <th>Role Offered</th>
+                    <th>Package (CTC)</th>
+                    <th>Location</th>
+                    <th style="text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model.Companies)
+                {
+                    <tr>
+                        <td>
+                            <div class="student-name-row">
+                                <span class="student-avatar-mini brand-chip">@(c.Name.Length > 0 ? c.Name[..1] : "C")</span>
+                                <strong class="student-name">@c.Name</strong>
+                            </div>
+                        </td>
+                        <td><span class="role-pill">@c.JobRole</span></td>
+                        <td><strong class="package-val">@c.PackageLPA.ToString("0.0") LPA</strong></td>
+                        <td><span class="text-muted">📍 @c.Location</span></td>
+                        <td style="text-align: right;">
+                            <form method="post" asp-page-handler="Delete" asp-route-id="@c.Id" onsubmit="return confirm('Remove @c.Name?');" style="display:inline;">
+                                <button type="submit" class="btn btn-xs btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+
+                @if (Model.Companies.Count == 0)
+                {
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <div class="empty-icon">▣</div>
+                            <h3>No recruiters found</h3>
+                            <p>Register company profiles using the button above.</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- Register Company Modal -->
+<div id="companyModal" class="modal-backdrop" style="display:none;">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>Add New Recruiter</h3>
+            <button type="button" class="close-btn" onclick="toggleModal('companyModal')">&times;</button>
+        </div>
+        <form method="post" asp-page-handler="Add">
+            <div class="form-group">
+                <label>Company Name *</label>
+                <input asp-for="NewCompany.Name" class="form-control" required placeholder="e.g. Atlassian, Adobe, Cisco" />
+            </div>
+
+            <div class="form-group">
+                <label>Role / Designation *</label>
+                <input asp-for="NewCompany.JobRole" class="form-control" required placeholder="e.g. Software Engineer, Data Analyst" />
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Package (LPA) *</label>
+                    <input asp-for="NewCompany.PackageLPA" type="number" step="0.1" min="0" class="form-control" value="12.0" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Location</label>
+                    <input asp-for="NewCompany.Location" class="form-control" placeholder="e.g. Bangalore, Remote" />
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="toggleModal('companyModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Recruiter</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleModal(id) {
+            const m = document.getElementById(id);
+            if (!m) return;
+            m.style.display = m.style.display === "none" || !m.style.display ? "flex" : "none";
+        }
+
+        const search = document.getElementById("companySearch");
+        if (search) {
+            search.addEventListener("input", function () {
+                const query = this.value.toLowerCase().trim();
+                document.querySelectorAll("#companyTable tbody tr").forEach(row => {
+                    if (row.classList.contains("empty-state")) return;
+                    row.hidden = !row.innerText.toLowerCase().includes(query);
+                });
+            });
+        }
+    </script>
+}

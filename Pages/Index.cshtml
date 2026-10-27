@@ -1,0 +1,165 @@
+@page
+@model PlacementDashboard.Pages.IndexModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<section class="welcome">
+    <div class="welcome-header">
+        <div>
+            <p class="eyebrow">OVERVIEW</p>
+            <h1>Placement Dashboard</h1>
+            <p class="subtitle">Monitor student career progress, recruiting drives, and department statistics.</p>
+        </div>
+        <div class="quick-actions">
+            <a href="/Students" class="btn btn-primary">+ Add Student</a>
+            <a href="/Companies" class="btn btn-secondary">+ Add Company</a>
+            <a href="/Placements" class="btn btn-outline">Record Placement</a>
+        </div>
+    </div>
+</section>
+
+<section class="stats">
+    <article class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon purple">♙</div>
+            <span class="stat-badge">Students</span>
+        </div>
+        <p class="stat-label">Total Registered</p>
+        <h2>@Model.TotalStudents</h2>
+        <small class="stat-foot">Enrolled eligible candidates</small>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon green">✓</div>
+            <span class="stat-badge green">Placed</span>
+        </div>
+        <p class="stat-label">Students Placed</p>
+        <h2>@Model.PlacedStudents</h2>
+        <small class="stat-foot">Offers secured this season</small>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon blue">▣</div>
+            <span class="stat-badge blue">Recruiters</span>
+        </div>
+        <p class="stat-label">Partner Companies</p>
+        <h2>@Model.TotalCompanies</h2>
+        <small class="stat-foot">Active hiring partners</small>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon orange">↗</div>
+            <span class="stat-badge orange">Rate</span>
+        </div>
+        <p class="stat-label">Placement Rate</p>
+        <h2>@Model.PlacementRate%</h2>
+        <small class="stat-foot">Target: 85% for AY 2026</small>
+    </article>
+</section>
+
+<section class="panel progress-panel">
+    <div class="panel-heading">
+        <div>
+            <h2>Campus Placement Progress</h2>
+            <p>Cumulative placed percentage across all academic programs</p>
+        </div>
+        <span class="year-tag">Session 2026–27</span>
+    </div>
+
+    <div class="progress-container">
+        <div class="progress-track">
+            <div class="progress-value" style="width: @(Model.PlacementRate)%"></div>
+        </div>
+        <div class="progress-labels">
+            <span><span>@Model.PlacedStudents</span> of <span>@Model.TotalStudents</span> students placed</span>
+            <strong class="highlight-percent">@Model.PlacementRate%</strong>
+        </div>
+    </div>
+</section>
+
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <h2>Student Directory</h2>
+            <p>Real-time records synchronized with MongoDB (Collection: Students)</p>
+        </div>
+
+        <div class="table-actions">
+            <input type="search" id="studentSearch" class="search-input" placeholder="Search by name, email, department..." />
+            <a href="/Students" class="btn btn-sm btn-secondary">Manage All</a>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table id="studentTable">
+            <thead>
+                <tr>
+                    <th>Student Details</th>
+                    <th>Department</th>
+                    <th>CGPA</th>
+                    <th>Status</th>
+                    <th style="text-align: right;">Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            @foreach (var student in Model.Students)
+            {
+                <tr>
+                    <td>
+                        <div class="student-name-row">
+                            <span class="student-avatar-mini">@(student.Name.Length > 0 ? student.Name[..1] : "?")</span>
+                            <div>
+                                <strong class="student-name">@student.Name</strong>
+                                <div class="student-email">@student.Email</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="dept-pill">@student.Department</span></td>
+                    <td><strong>@student.CGPA.ToString("0.00")</strong></td>
+                    <td>
+                        <span class="status status-@(student.PlacementStatus.ToLowerInvariant())">
+                            @student.PlacementStatus
+                        </span>
+                    </td>
+                    <td style="text-align: right;">
+                        <a href="/Students" class="table-link">View Details →</a>
+                    </td>
+                </tr>
+            }
+
+            @if (Model.Students.Count == 0)
+            {
+                <tr>
+                    <td colspan="5" class="empty-state">
+                        <div class="empty-icon">📂</div>
+                        <h3>No students found</h3>
+                        <p>Add student records to start tracking placement drives.</p>
+                        <a href="/Students" class="btn btn-primary btn-sm">+ Add First Student</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        const search = document.getElementById("studentSearch");
+        if (search) {
+            search.addEventListener("input", function () {
+                const query = this.value.toLowerCase().trim();
+                document.querySelectorAll("#studentTable tbody tr").forEach(row => {
+                    if (row.classList.contains("empty-state")) return;
+                    row.hidden = !row.innerText.toLowerCase().includes(query);
+                });
+            });
+        }
+    </script>
+}

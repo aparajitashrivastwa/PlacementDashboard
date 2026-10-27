@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "YvwtzEXmSd4=",
+  "success": true,
+  "projectFilePath": "/Users/sushantpathak/Downloads/SEM 5/DNET/PlacementDashboard/PlacementDashboard.csproj",
+  "expectedPackageFiles": [
+    "/Users/sushantpathak/.nuget/packages/dnsclient/1.6.1/dnsclient.1.6.1.nupkg.sha512",
+    "/Users/sushantpathak/.nuget/packages/mongodb.bson/3.13.0/mongodb.bson.3.13.0.nupkg.sha512",
+    "/Users/sushantpathak/.nuget/packages/mongodb.driver/3.13.0/mongodb.driver.3.13.0.nupkg.sha512",
+    "/Users/sushantpathak/.nuget/packages/sharpcompress/0.48.1/sharpcompress.0.48.1.nupkg.sha512",
+    "/Users/sushantpathak/.nuget/packages/snappier/1.3.1/snappier.1.3.1.nupkg.sha512",
+    "/Users/sushantpathak/.nuget/packages/zstdsharp.port/0.7.3/zstdsharp.port.0.7.3.nupkg.sha512"
+  ],
+  "logs": []
+}
